@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ShopEasy - Your Cart</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
+    header { background: #2874f0; color: white; padding: 15px 20px; text-align: center; font-size: 24px; font-weight: bold; }
+    .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding: 10px 0; }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item img { width: 100px; height: 80px; object-fit: contain; }
+    .item-details { flex-grow: 1; padding: 0 20px; }
+    .item-name { font-weight: bold; margin-bottom: 5px; }
+    .item-price { color: #b12704; }
+    .remove-btn {
+      background: #ff3b3b; color: white; border: none;
+      padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;
+    }
+    .remove-btn:hover { background: #d11a1a; }
+    .empty { text-align: center; font-size: 18px; color: #777; margin-top: 40px; }
+    .total-section {
+      text-align: right; margin-top: 20px;
+      font-size: 20px; font-weight: bold; color: #2874f0;
+    }
+    /* Order form styles */
+    #orderForm {
+      margin-top: 30px;
+      background: #eef5fb;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+    #orderForm input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    #orderForm button {
+      background: #2874f0;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #orderForm button:hover {
+      background: #1a5ec8;
+    }
+    /* Place order button */
+    #placeOrderBtn {
+      margin-top: 20px;
+      background: #2874f0;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    #placeOrderBtn:hover {
+      background: #1a5ec8;
+    }
+  </style>
+</head>
+<body>
+
+<header>🛒 Your Cart</header>
+
+<div class="container" id="cartContainer">
+  <!-- Cart items will load here -->
+</div>
+
+<div class="container" style="max-width: 800px;">
+  <button id="placeOrderBtn" onclick="showOrderForm()">Place Order</button>
+
+  <section id="orderForm">
+    <h3>Enter your delivery details</h3>
+    <input type="text" id="name" placeholder="Full Name" />
+    <input type="text" id="address" placeholder="Full Address" />
+    <input type="text" id="phone" placeholder="Phone Number" />
+    <button onclick="placeOrder()">Confirm Order</button>
+  </section>
+</div>
+
+<script>
+  const loggedInUser = localStorage.getItem('loggedInUser');
+  const cartContainer = document.getElementById('cartContainer');
+
+  if (!loggedInUser) {
+    alert("Please log in to view your cart.");
+    window.location.href = 'login.html';
+  } else {
+    const cartItems = JSON.parse(localStorage.getItem('cart_' + loggedInUser) || '[]');
+
+    if (cartItems.length === 0) {
+      cartContainer.innerHTML = `<div class="empty">Your cart is currently empty.</div>`;
+      document.getElementById('placeOrderBtn').style.display = 'none';
+    } else {
+      let total = 0;
+
+      cartItems.forEach((item, index) => {
+        total += item.price;
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+        itemDiv.innerHTML = `
+          <img src="${item.img}" alt="${item.name}" />
+          <div class="item-details">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">₹${item.price}</div>
+          </div>
+          <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+        `;
+        cartContainer.appendChild(itemDiv);
+      });
+
+      const totalDiv = document.createElement('div');
+      totalDiv.className = 'total-section';
+      totalDiv.textContent = `Total: ₹${total}`;
+      cartContainer.appendChild(totalDiv);
+    }
+  }
+
+  function removeFromCart(index) {
+    let cart = JSON.parse(localStorage.getItem('cart_' + loggedInUser) || '[]');
+    cart.splice(index, 1);
+    localStorage.setItem('cart_' + loggedInUser, JSON.stringify(cart));
+    alert("Item removed from cart.");
+    location.reload();
+  }
+
+  function showOrderForm() {
+    document.getElementById('orderForm').style.display = 'block';
+    document.getElementById('placeOrderBtn').style.display = 'none';
+  }
+
+  function placeOrder() {
+    const name = document.getElementById('name').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+
+    if (!name || !address || !phone) {
+      alert('Please fill all the fields');
+      return;
+    }
+
+    const cart = JSON.parse(localStorage.getItem('cart_' + loggedInUser) || '[]');
+    if (cart.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    // Save order info in localStorage (simulate order placement)
+    let orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    orders.push({
+      user: loggedInUser,
+      name: name,
+      address: address,
+      phone: phone,
+      cart: cart,
+      date: new Date().toLocaleString()
+    });
+    localStorage.setItem('orders', JSON.stringify(orders));
+
+    // Clear cart
+    localStorage.removeItem('cart_' + loggedInUser);
+
+    alert('Order placed successfully!');
+
+    // Redirect to homepage or any other page
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>
+
+

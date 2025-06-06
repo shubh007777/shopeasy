@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ShopEasy - Login/Register</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f7f7; padding: 20px;}
+    .container { max-width: 400px; background: white; padding: 20px; margin: auto; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
+    input { width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box;}
+    button { width: 100%; padding: 10px; background: #2874f0; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;}
+    button:hover { background: #0b59d1;}
+    .toggle-link { margin-top: 12px; text-align: center; cursor: pointer; color: #2874f0;}
+  </style>
+</head>
+<body>
+
+<div class="container" id="formContainer">
+
+  <!-- Form will toggle between Login and Register -->
+
+</div>
+
+<script>
+  const container = document.getElementById('formContainer');
+
+  // Check if user is logged in, if yes redirect to home
+  if(localStorage.getItem('loggedInUser')){
+    alert('You are already logged in!');
+    window.location.href = 'index.html'; // Home page filename
+  }
+
+  // Show login form initially
+  showLoginForm();
+
+  function showLoginForm() {
+    container.innerHTML = `
+      <h2>Login</h2>
+      <input type="email" id="loginEmail" placeholder="Enter your email" required />
+      <input type="password" id="loginPassword" placeholder="Enter your password" required />
+      <button onclick="loginUser()">Login</button>
+      <div class="toggle-link" onclick="showRegisterForm()">Don't have an account? Register</div>
+    `;
+  }
+
+  function showRegisterForm() {
+    container.innerHTML = `
+      <h2>Register</h2>
+      <input type="email" id="registerEmail" placeholder="Enter your email" required />
+      <input type="password" id="registerPassword" placeholder="Enter your password" required />
+      <button onclick="registerUser()">Register</button>
+      <div class="toggle-link" onclick="showLoginForm()">Already have an account? Login</div>
+    `;
+  }
+
+  function registerUser() {
+    const email = document.getElementById('registerEmail').value.trim();
+    const password = document.getElementById('registerPassword').value.trim();
+
+    if (!email || !password) {
+      alert('Please enter email and password');
+      return;
+    }
+
+    // Get users from localStorage or empty array
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    // Check if email already exists
+    if (users.find(u => u.email === email)) {
+      alert('Email already registered. Please login.');
+      showLoginForm();
+      return;
+    }
+
+    // Add new user
+    users.push({email, password});
+    localStorage.setItem('users', JSON.stringify(users));
+    alert('Registration successful! Please login.');
+    showLoginForm();
+  }
+
+  function loginUser() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    if (!email || !password) {
+      alert('Please enter email and password');
+      return;
+    }
+
+    // Get users from localStorage
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    // Find matching user
+    let user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+      localStorage.setItem('loggedInUser', email); // Set logged in user
+      alert('Login successful!');
+      window.location.href = 'index.html'; // Redirect to home page
+    } else {
+      alert('Invalid email or password!');
+    }
+  }
+</script>
+
+</body>
+</html>
+
+
