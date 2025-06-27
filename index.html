@@ -1,234 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ShopEasy - Home</title>
+  <title>ShopEasy - Your Cart</title>
   <style>
-    /* Basic Reset */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
+    body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 20px; }
+    header { background: #2874f0; color: white; padding: 15px 20px; text-align: center; font-size: 24px; font-weight: bold; }
+    .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding: 10px 0; }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item img { width: 100px; height: 80px; object-fit: contain; }
+    .item-details { flex-grow: 1; padding: 0 20px; }
+    .item-name { font-weight: bold; margin-bottom: 5px; }
+    .item-price { color: #b12704; }
+    .remove-btn {
+      background: #ff3b3b; color: white; border: none;
+      padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;
     }
-
-    body {
-      background: #f7f7f7;
-      color: #333;
+    .remove-btn:hover { background: #d11a1a; }
+    .empty { text-align: center; font-size: 18px; color: #777; margin-top: 40px; }
+    .total-section {
+      text-align: right; margin-top: 20px;
+      font-size: 20px; font-weight: bold; color: #2874f0;
     }
-
-    header {
-      background: #2874f0;
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    header h1 {
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-    nav a {
-      color: white;
-      margin-left: 20px;
-      text-decoration: none;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    .products {
-      max-width: 1200px;
-      margin: 20px auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-      padding: 0 20px;
-    }
-
-    .product-card {
-      background: white;
+    /* Order form styles */
+    #orderForm {
+      margin-top: 30px;
+      background: #eef5fb;
+      padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: box-shadow 0.3s ease;
+      display: none;
     }
-
-    .product-card:hover {
-      box-shadow: 0 0 15px rgba(40, 116, 240, 0.4);
-    }
-
-    .product-card img {
-      max-width: 100%;
-      height: 150px;
-      object-fit: contain;
-      margin-bottom: 10px;
-    }
-
-    .product-name {
-      font-weight: 700;
-      margin-bottom: 6px;
+    #orderForm input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
       font-size: 16px;
-      height: 40px;
-      overflow: hidden;
     }
-
-    .product-price {
-      color: #b12704;
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-
-    .btn-add {
+    #orderForm button {
       background: #2874f0;
       color: white;
       border: none;
-      padding: 8px 12px;
+      padding: 10px 20px;
       border-radius: 4px;
       cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s ease;
+      font-size: 16px;
+      margin-top: 10px;
+      font-weight: bold;
     }
-
-    .btn-add:hover {
-      background: #0b59d1;
+    #orderForm button:hover {
+      background: #1a5ec8;
     }
-
-    /* Cart icon & badge */
-    .cart {
-      position: relative;
-      cursor: pointer;
-      font-size: 22px;
-    }
-
-    .cart-badge {
-      position: absolute;
-      top: -6px;
-      right: -10px;
-      background: #ff3b3b;
+    /* Place order button */
+    #placeOrderBtn {
+      margin-top: 20px;
+      background: #2874f0;
       color: white;
-      font-size: 12px;
-      padding: 2px 6px;
-      border-radius: 50%;
-      font-weight: 700;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
     }
+    #placeOrderBtn:hover {
+      background: #1a5ec8;
+    }    
 
-    /* Responsive */
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 20px;
-      }
 
-      .products {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      }
-    }
+
+
+
+    .cart-product-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-right: 15px;
+}
+
   </style>
 </head>
-
 <body>
 
-  <header>
-    <h1 onclick="location.reload()">ShopEasy</h1>
-    <nav>
-      <a href="cart.html" id="cartLink">Cart 🛒 <span class="cart-badge" id="cartCount">0</span></a>
-      <a href="login.html" id="loginLink">Login</a>
-    </nav>
-  </header>
+<header>🛒 Your Cart</header>
 
-  <section class="products" id="productList">
-    <!-- Products loaded by JS -->
+<div class="container" id="cartContainer">
+  <!-- Cart items will load here -->
+</div>
+
+<div class="container" style="max-width: 800px;">
+  <button id="placeOrderBtn" onclick="showOrderForm()">Place Order</button>
+
+  <section id="orderForm">
+    <h3>Enter your delivery details</h3>
+    <input type="text" id="name" placeholder="Full Name" />
+    <input type="text" id="address" placeholder="Full Address" />
+    <input type="text" id="phone" placeholder="Phone Number" />
+    <button onclick="placeOrder()">Confirm Order</button>
   </section>
+</div>
 
-  <script>
-    // Check if user is logged in
-    const loggedInUser = localStorage.getItem('loggedInUser');
-    const loginLink = document.getElementById('loginLink');
+<script>
+  const products = [
+    {
+      id: 1,
+      name: "iPhone 16 Pro Max 256GB White",
+      price: 136400,
+      mainImg: "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRAKeUUMvD6FyzASRQM30T1LcZTQQDEUoaZsFpg-tE-jNrQN620Yks3hqsYh89ZXaO_EIHJD9vQy9KNynWQsEUEIiIqONCliz6MmGTcDcd66-CUo-wdlfVcNg",
+      thumbnails: [
+        "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSXxbnUsojpWOjPPvjcZEUW-WEpylfmBz1eMN-okGTFJgi8UerrKaH93GBNV3VV_64moZQZMbeIociaYXJm41yWb9njDNPIfCfwXJypixWbKN_AYd8iFbzm",
+        "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcS-RU-SkuWeUCvL7kp32sieWJc3pzg5mxLchm3vjU2MOu36WEaULefBmCO2nBcIwsD6CVPHbnA_TU1BV7weUqe0-X9u1_T9IIHgg8fLE42bSLUKQ1MsnzvSYQ",
+        "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQf8xEPFylwFnM7A8rXFHpkH1HE7Gl0g1I0WoUBbPqKl33SDYqde73uUXhnZWJvAS_dLJI24910SBb3Y4PK6ion6ONhlgNiR8Jcul3emNuGRIBXIFm6AZaV4w"
+      ]
+    },
+    {
+      id: 2,
+      name: "MacBook Pro M3 16-inch",
+      price: 251994,
+      mainImg: "https://via.placeholder.com/300x200?text=MacBook",
+      thumbnails: [
+        "https://via.placeholder.com/50?text=Open",
+        "https://via.placeholder.com/50?text=Closed"
+      ]
+    }
+  ];
 
-    if (loggedInUser) {
-      loginLink.textContent = 'Logout (' + loggedInUser + ')';
-      loginLink.href = '#';
-      loginLink.addEventListener('click', () => {
-        localStorage.removeItem('loggedInUser');
-        alert('Logged out successfully!');
-        location.reload();
+  const productGrid = document.getElementById("productGrid");
+
+  products.forEach(product => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <img class="main-product-img" src="${product.mainImg}" id="main-${product.id}" alt="${product.name}" />
+      <div class="thumbs">
+        ${product.thumbnails.map(thumb =>
+          `<img src="${thumb}" class="thumb-img" onclick="document.getElementById('main-${product.id}').src='${thumb}'" />`
+        ).join('')}
+      </div>
+      <h3>${product.name}</h3>
+      <p>₹${product.price}</p>
+      <div class="btns">
+        <button onclick="addToCart(${product.id})">Add to Cart</button>
+        <button onclick="buyNow(${product.id})">Buy Now</button>
+      </div>
+    `;
+    productGrid.appendChild(card);
+  });
+
+  function addToCart(id) {
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (!loggedInUser) {
+      localStorage.setItem("lastPage", "index.html");
+      alert("Please login to add products to cart.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    let cart = JSON.parse(localStorage.getItem("cart_" + loggedInUser) || "[]");
+    const product = products.find(p => p.id === id);
+    if (!product) return alert("Product not found");
+
+    const exists = cart.some(p => p.id === id);
+    if (exists) {
+      alert("This product is already in your cart!");
+    } else {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        mainImg: product.mainImg
       });
+      localStorage.setItem("cart_" + loggedInUser, JSON.stringify(cart));
+      alert("Product added to cart!");
+    }
+  }
+
+  function buyNow(id) {
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (!loggedInUser) {
+      localStorage.setItem("lastPage", "cart.html");
+      window.location.href = "login.html";
+      return;
     }
 
-    // Sample products array
-    const products = [
-      { id: 1, name: "Wireless Earbuds", price: 999, img: "https://i.pinimg.com/736x/32/23/7c/32237cecc4c8b1fda29879d673517dc9.jpg" },
-      { id: 2, name: "Smart Watch", price: 2999, img: "https://i.pinimg.com/736x/77/b6/bb/77b6bba1bf8921f80b95a3ba26dbef93.jpg" },
-      { id: 3, name: "Bluetooth Speaker", price: 1499, img: "https://i.pinimg.com/736x/19/f0/aa/19f0aae7bc6ab392a49979f8e61be91e.jpg" },
-      { id: 4, name: "Gaming Mouse", price: 899, img: "https://i.pinimg.com/736x/69/a0/1a/69a01ad590c39afd523af0a79319d0d2.jpg" },
-      { id: 5, name: "Mechanical Keyboard", price: 3499, img: "https://i.pinimg.com/736x/e8/5e/ef/e85eef47b93ed18ea6a2e38e975f3ecf.jpg" },
-      { id: 6, name: "HD Monitor", price: 8999, img: "https://i.pinimg.com/736x/fc/92/8d/fc928d3053cc746e0b8ebba1d4e2ac12.jpg" }
-      
-    ];
+    let cart = JSON.parse(localStorage.getItem("cart_" + loggedInUser) || "[]");
+    const product = products.find(p => p.id === id);
+    if (!product) return;
 
-    const productList = document.getElementById('productList');
-
-    function updateCartCount() {
-      if (!loggedInUser) {
-        document.getElementById('cartCount').textContent = 0;
-        return;
-      }
-      const cart = JSON.parse(localStorage.getItem('cart_' + loggedInUser) || '[]');
-      document.getElementById('cartCount').textContent = cart.length;
-    }
-
-    function addToCart(id) {
-      if (!loggedInUser) {
-        alert('Please login to add products to cart.');
-        window.location.href = 'login.html';
-        return;
-      }
-      let cart = JSON.parse(localStorage.getItem('cart_' + loggedInUser) || '[]');
-      if (!cart.find(p => p.id === id)) {
-        const product = products.find(p => p.id === id);
-        cart.push(product);
-        localStorage.setItem('cart_' + loggedInUser, JSON.stringify(cart));
-        alert('Product added to cart!');
-        updateCartCount();
-      } else {
-        alert('Product already in cart.');
-      }
-    }
-
-    function renderProducts() {
-      products.forEach(product => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-        <img src="${product.img}" alt="${product.name}" />
-        <div class="product-name">${product.name}</div>
-        <div class="product-price">₹${product.price}</div>
-        <button class="btn-add" onclick="addToCart(${product.id})">Add to Cart</button>
-      `;
-        productList.appendChild(card);
+    const exists = cart.some(p => p.id === id);
+    if (!exists) {
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        mainImg: product.mainImg
       });
+      localStorage.setItem("cart_" + loggedInUser, JSON.stringify(cart));
     }
 
-    renderProducts();
-    updateCartCount();
-  </script>
+    window.location.href = "cart.html";
+  }
+</script>
+
+
+
 
 </body>
-
 </html>
-
 
